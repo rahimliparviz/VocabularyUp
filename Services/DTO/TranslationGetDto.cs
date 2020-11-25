@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace Domain
+namespace Services.DTO
 {
-    public class Translation:BaseModel
+    public class TranslationGetDto
     {
+        public Guid Id { get; set; }
         public Guid PhraseId { get; set; }
-        public Phrase Phrase { get; set; }
         public Guid LanguageId { get; set; }
-        public Language Language { get; set; }
         public string Word { get; set; }
     }
 }

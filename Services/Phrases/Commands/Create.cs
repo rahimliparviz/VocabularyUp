@@ -9,24 +9,26 @@ using Infrastructure.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Services.Languages.Commands
+namespace Services.Phrases.Commands
 {
     public class Create
     {
         public class Command:IRequest
         {
-            public string Name { get; set; }
+            public string Word { get; set; }
+            public Guid LanguageId { get; set; }
         }
-
-        public class CommandValidator : AbstractValidator<Command>
+        
+        public class CommandValidator:AbstractValidator<Command>
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Name).NotEmpty();
+                RuleFor(x => x.Word).NotEmpty();
+                RuleFor(x => x.LanguageId).NotEmpty();
             }
         }
         
-        public class Handler:IRequestHandler<Command>
+        public  class Handler:IRequestHandler<Command>
         {
             private readonly DataContext _context;
 
@@ -36,18 +38,22 @@ namespace Services.Languages.Commands
             }
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var isLanguageAlreadyExist =await _context.Languages.AnyAsync(l=>l.Name == request.Name);
+                var isPhraseAlreadyExist = await _context.Phrases.AnyAsync(
+                    x => 
+                    x.Word == request.Word &&
+                    x.LanguageId == request.LanguageId);
 
-                if (isLanguageAlreadyExist) throw new RestException(HttpStatusCode.Conflict, new {Language = "Already exists"});
-                
+                if (isPhraseAlreadyExist) throw new RestException(HttpStatusCode.Conflict, new {Phrase = "Already exists"});
 
-                var language = new Language
+
+                var phrase = new Phrase
                 {
-                    Name = request.Name,
+                    Word = request.Word,
+                    LanguageId = request.LanguageId,
                     CreatedAt = DateTime.Now
                 };
 
-                await _context.Languages.AddAsync(language);
+                await _context.Phrases.AddAsync(phrase);
 
                 var success = await _context.SaveChangesAsync() > 0;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Data;
@@ -11,14 +12,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Services.Languages.Commands
 {
-    public class Create
+    public class Edit
     {
         public class Command:IRequest
         {
+            public Guid Id { get; set; }
             public string Name { get; set; }
-        }
 
-        public class CommandValidator : AbstractValidator<Command>
+        }
+        
+        public class CommandValidator:AbstractValidator<Command>
         {
             public CommandValidator()
             {
@@ -36,24 +39,21 @@ namespace Services.Languages.Commands
             }
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var isLanguageAlreadyExist =await _context.Languages.AnyAsync(l=>l.Name == request.Name);
+               var language =await _context.Languages.FindAsync(request.Id);
 
-                if (isLanguageAlreadyExist) throw new RestException(HttpStatusCode.Conflict, new {Language = "Already exists"});
-                
+               _ = language ?? throw new RestException(HttpStatusCode.BadRequest,new {Language = "Not found"});
 
-                var language = new Language
-                {
-                    Name = request.Name,
-                    CreatedAt = DateTime.Now
-                };
+               var isLanguageAlreadyExist = await _context.Languages.AnyAsync(l=>l.Id != request.Id && l.Name == request.Name);
 
-                await _context.Languages.AddAsync(language);
+               if (isLanguageAlreadyExist) throw new RestException(HttpStatusCode.BadRequest, new {Language = "Not found"});
+               
 
-                var success = await _context.SaveChangesAsync() > 0;
+               language.Name = request.Name;
 
-                if (success) return Unit.Value;
+               var success = await _context.SaveChangesAsync() > 0;
+               if (success) return Unit.Value;
 
-                throw new Exception("Problem saving changes");
+               throw new Exception("Problem saving changes");
             }
         }
     }
