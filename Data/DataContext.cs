@@ -27,6 +27,8 @@ namespace Data
         public DbSet<Language> Languages { get; set; }
         public DbSet<Phrase> Phrases { get; set; }
         public DbSet<Translation> Translations { get; set; }
+
+        public DbSet<UserPhrase> UserPhrases { get; set; }
         
     }
 }

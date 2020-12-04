@@ -9,8 +9,9 @@ namespace Services.Mappings
         public MappingProfile()
         {
             CreateMap<Language, LanguageGetDto>();
-            // CreateMap<Phrase, PhraseGetDto>();
+            CreateMap<Phrase, PhraseGetDto>();
             CreateMap<Translation, TranslationGetDto>();
+            CreateMap<TranslationPostDto, Translation>();
             // CreateMap<Expense, ExpenseDto>();
             //
             //

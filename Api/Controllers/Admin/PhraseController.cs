@@ -12,11 +12,11 @@ namespace Api.Controllers.Admin
 {
     public class PhraseController : BaseController{
         
-        // [HttpGet]
-        // public async Task<List<PhraseGetDto>> List()
-        // {
-        //     return await Mediator.Send(new List.Query());
-        // }
+        [HttpGet]
+        public async Task<List<PhraseGetDto>> List()
+        {
+            return await Mediator.Send(new List.Query());
+        }
         
         [HttpGet("{id}")]
         public async Task<PhraseGetDto> Details(Guid id)
@@ -48,6 +48,12 @@ namespace Api.Controllers.Admin
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
             return await Mediator.Send(new Delete.Command {Id = id});
+        }
+
+        [HttpPost("upload")]
+        public async Task<ActionResult<Unit>> Add([FromForm] FileUpload.Command command)
+        {
+            return await Mediator.Send(command);
         }
     }
 }
