@@ -10,8 +10,9 @@ using Services.Phrases.Commands;
 
 namespace Api.Controllers.Admin
 {
+
     public class PhraseController : BaseController{
-        
+    
         [HttpGet]
         public async Task<List<PhraseGetDto>> List()
         {
@@ -51,7 +52,13 @@ namespace Api.Controllers.Admin
         }
 
         [HttpPost("upload")]
-        public async Task<ActionResult<Unit>> Add([FromForm] FileUpload.Command command)
+        public async Task<ActionResult<List<PhrasesWithTranslationsDto>>> Add([FromForm] FileUpload.Command command)
+        {
+            return await Mediator.Send(command);
+        }
+
+        [HttpPost("upload-from-dictionary")]
+        public async Task<ActionResult<Unit>>  AddFromDictionary([FromForm] DictionaryUpload.Command command)
         {
             return await Mediator.Send(command);
         }

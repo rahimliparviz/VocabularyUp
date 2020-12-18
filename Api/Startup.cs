@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Api.Middlewares;
@@ -21,11 +23,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Services.Helper.Abstract;
 using Services.Helper.Concrete;
 using Services.Languages.Commands;
 using Services.Mappings;
 using Services.Translations.Queries;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Api
 {
@@ -41,6 +45,7 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+        
             services.AddCors();
             services.AddMediatR(typeof(Details).Assembly);
             services.AddDbContext<DataContext>(opts =>
@@ -50,6 +55,25 @@ namespace Api
             });
             services.AddControllers()
                 .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>());
+
+
+            services.AddSwaggerGen(
+                opt =>
+                {
+                    opt.SwaggerDoc("v1",
+
+                        new OpenApiInfo
+                        {
+                            Title = "VocabularyUp API",
+                            Description = "Api for improving english vocabulary",
+                            Version = "v1"
+                        });
+                    opt.CustomSchemaIds(t=>t.FullName);
+           
+                });
+            
+            
+            
 
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -77,6 +101,7 @@ namespace Api
                 });
 
             services.AddScoped<ITranslateWordsListService, TranslateWordsListService>();
+            services.AddScoped<IWordsFromDictionaryToDatabase, WordsFromDictionaryToDatabase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,6 +132,22 @@ namespace Api
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+            var swaggerOptions = new Options.SwaggerOptions();
+            
+            Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
+            
+            app.UseSwagger(opt => { opt.RouteTemplate = swaggerOptions.JsonRoute
+                ;});
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint(swaggerOptions.UIEndpoint,swaggerOptions.Description);
+            } );
+            // app.UseSwagger();
+            // app.UseSwaggerUI(options =>
+            // {
+            //     options.SwaggerEndpoint("/swagger/v1/swagger.json","VocabularyUp API");
+            // } );
         }
     }
 }

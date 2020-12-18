@@ -12,6 +12,10 @@ namespace Services.Mappings
             CreateMap<Phrase, PhraseGetDto>();
             CreateMap<Translation, TranslationGetDto>();
             CreateMap<TranslationPostDto, Translation>();
+             CreateMap<Translation, TranslationPostDto>();
+            CreateMap<Phrase, PhrasesWithTranslationsDto>()
+                ;
+
             // CreateMap<Expense, ExpenseDto>();
             //
             //
