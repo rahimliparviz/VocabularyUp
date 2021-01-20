@@ -13,10 +13,10 @@ namespace Services.Helper.Concrete
         public async void AddWordsFile(IFormFile file)
         {
 
-            String resultt;
+            String result;
             using var reader = new StreamReader(file.OpenReadStream());
-            resultt = await reader.ReadToEndAsync();
-            Console.WriteLine(resultt);
+            result = await reader.ReadToEndAsync();
+            Console.WriteLine(result);
         }
     }
 }

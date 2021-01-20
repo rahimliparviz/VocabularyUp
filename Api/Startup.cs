@@ -100,7 +100,6 @@ namespace Api
                     };
                 });
 
-            services.AddScoped<ITranslateWordsListService, TranslateWordsListService>();
             services.AddScoped<IWordsFromDictionaryToDatabase, WordsFromDictionaryToDatabase>();
         }
 

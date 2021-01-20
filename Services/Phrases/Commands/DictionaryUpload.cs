@@ -27,84 +27,82 @@ namespace Services.Phrases.Commands
             public Guid FromLanguageId { get; set; }
             public Guid ToLanguageId { get; set; }
         }
-   
-
-    public class Handler : IRequestHandler<Command>
-    {
-        private readonly DataContext _context;
 
 
-        public Handler(DataContext context,IWordsFromDictionaryToDatabase wordsFromDictionaryToDatabase)
+        public class Handler : IRequestHandler<Command>
         {
-            _context = context;
-        }
-        
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
-        {
+            private readonly DataContext _context;
 
 
-
-
-
-            String allText;
-            using var reader = new StreamReader(request.File.OpenReadStream());
-            allText = await reader.ReadToEndAsync();
-
-
-
-            var wordsPair = allText
-                .Replace("\r\n", "")
-                .Replace("\t", "")
-                .Split('#');
-            foreach (var wordPair in wordsPair)
+            //TODO----------------Refactor
+            public Handler(DataContext context, IWordsFromDictionaryToDatabase wordsFromDictionaryToDatabase)
             {
-
-                // Console.WriteLine(wordPair);
-                if (wordPair.Length > 0)
-                {
-                
-
-                ;
-                var wt = wordPair.Split('*').ToArray();
-                var word = wt[0];
-                var translatedWord = wt[1];
-                // Console.WriteLine($"{w} - {t}");
-
-
-
-
-                var newPhrase = new Phrase
-                {
-                    Word = word,
-                    LanguageId = request.ToLanguageId,
-                    CreatedAt = DateTime.Now,
-                    Translations = new List<Translation>()
-                };
-                var translation = new Translation
-                {
-                    LanguageId = request.FromLanguageId,
-                    Word = translatedWord,
-                    CreatedAt = DateTime.Now
-                };
-                newPhrase.Translations.Add(translation);
-                await _context.Phrases.AddAsync(newPhrase, cancellationToken);
-                // phrasesToAdd.Add(newPhrase);
+                _context = context;
             }
 
-        }
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            {
 
-            await _context.SaveChangesAsync(cancellationToken);
-            
-            Console.WriteLine(allText);
-            
-            
-            
-            
-            
-   
-    
-            throw new Exception("Problem saving changes");
+
+
+
+
+                String allText;
+                using var reader = new StreamReader(request.File.OpenReadStream());
+                allText = await reader.ReadToEndAsync();
+
+
+
+                var wordsPair = allText
+                    .Replace("\r\n", "")
+                    .Replace("\t", "")
+                    .Split('#');
+                foreach (var wordPair in wordsPair)
+                {
+
+                    if (wordPair.Length > 0)
+                    {
+
+
+                        ;
+                        var wt = wordPair.Split('*').ToArray();
+                        var word = wt[0];
+                        var translatedWord = wt[1];
+
+
+
+
+
+                        var newPhrase = new Phrase
+                        {
+                            Word = word,
+                            LanguageId = request.ToLanguageId,
+                            CreatedAt = DateTime.Now,
+                            Translations = new List<Translation>()
+                        };
+                        var translation = new Translation
+                        {
+                            LanguageId = request.FromLanguageId,
+                            Word = translatedWord,
+                            CreatedAt = DateTime.Now
+                        };
+                        newPhrase.Translations.Add(translation);
+                        await _context.Phrases.AddAsync(newPhrase, cancellationToken);
+                    }
+
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+
+
+
+
+
+
+
+                throw new Exception("Problem saving changes");
+            }
         }
-    }
     }
 }
