@@ -55,28 +55,7 @@ namespace Services.Extentions
             return phrases;
         }
 
-        public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)
-            => self.Select((item, index) => (item, index));
-
-
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize)
-        {
-            while (source.Any())
-            {
-                yield return source.Take(chunksize);
-                source = source.Skip(chunksize);
-            }
-        }
-
-        public static IEnumerable<IEnumerable<T>> ChunkTrivialBetter<T>(this IEnumerable<T> source, int chunksize)
-        {
-            var pos = 0;
-            while (source.Skip(pos).Any())
-            {
-                yield return source.Skip(pos).Take(chunksize);
-                pos += chunksize;
-            }
-        }
+     
 
     }
 

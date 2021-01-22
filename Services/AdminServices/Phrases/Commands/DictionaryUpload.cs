@@ -6,16 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using Data;
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Services.DTO;
-using Services.Extentions;
-using Services.Helper.Abstract;
+
 
 namespace Services.Phrases.Commands
 {
@@ -34,24 +29,19 @@ namespace Services.Phrases.Commands
             private readonly DataContext _context;
 
 
-            //TODO----------------Refactor
-            public Handler(DataContext context, IWordsFromDictionaryToDatabase wordsFromDictionaryToDatabase)
+            public Handler(DataContext context)
             {
                 _context = context;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-
-
-
-
+                
 
                 String allText;
                 using var reader = new StreamReader(request.File.OpenReadStream());
                 allText = await reader.ReadToEndAsync();
-
-
+                
 
                 var wordsPair = allText
                     .Replace("\r\n", "")

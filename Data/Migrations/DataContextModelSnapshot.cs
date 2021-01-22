@@ -157,6 +157,22 @@ namespace Data.Migrations
                     b.Property<Guid>("PhaseId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("FromLanguageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("LastSeen")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("NumberOfRemainingRepetitions")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(3);
+
+                    b.Property<Guid>("ToLanguageId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("UserId", "PhaseId");
 
                     b.HasIndex("PhaseId");

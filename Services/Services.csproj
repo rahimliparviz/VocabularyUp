@@ -17,4 +17,8 @@
       <PackageReference Include="WebApiContrib.Formatting.JavaScriptSerializer" Version="0.9.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="AdminServices" />
+    </ItemGroup>
+
 </Project>
