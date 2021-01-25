@@ -14,7 +14,7 @@ using Services.DTO;
 
 namespace Services.Translations.Queries
 {
-    public class GetUserPhrasesPerLanguage
+    public class GetNewPhraseToLearn
     {
         public class Query : IRequest<List<PhraseCartDto>>
         {
@@ -39,24 +39,21 @@ namespace Services.Translations.Queries
             {
                 //TODO- get current user id
                 var userId = "ef84dac8-84a0-42a6-ba94-8840d9078af3";
-                //TODO- "en" ve "az" i default congih file dan getir
+                
+       
 
-                var phrasesCartDtos= _context.UserPhrases
-                    .Include(a => a.Phrase.Translations)
-                    .Where(p=>p.NumberOfRemainingRepetitions == 0)
-                    .Where(u => u.UserId == userId)
-                    .Where(l => l.FromLanguageId == request.FromLanguageId && l.ToLanguageId == request.ToLanguageId)
-                    .Select(a => new PhraseCartDto
+                var phrasesCartDtos = from P in _context.Phrases
+                    where P.UserPhrases.All(a => a.PhaseId != P.Id)
+                    where P.LanguageId == request.FromLanguageId
+                    select  new PhraseCartDto
                     {
-                        Phrase = a.Phrase.Word,
-                        PhraseId = a.PhaseId,
-                        Translation = a.Phrase.Translations.First(l => l.LanguageId == request.ToLanguageId).Word
-                    })
-                    .Take(50)
-                    .ToList();
+                        Phrase = P.Word,
+                        PhraseId = P.Id,
+                        Translation = P.Translations.First(l => l.LanguageId == request.ToLanguageId).Word
+                    };
 
                 
-                return phrasesCartDtos;
+                return phrasesCartDtos.ToList();
             }
         }
 
