@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data;
-using Domain;
-using Infrastructure.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Services.DTO;
 
-namespace Services.Translations.Queries
+namespace Services.UserServices.Actions.Queries
 {
-    public class GetNewPhraseToLearn
+    public class GetNewPhrasesToLearn
     {
-        public class Query : IRequest<List<PhraseCartDto>>
+        public class Query : IRequest<List<PhrasesWithTranslationDto>>
         {
             public Guid FromLanguageId { get; set; }
             public Guid ToLanguageId { get; set; }
+            public int  PhrasesCount { get; set; }
         }
 
 
 
-        public class Handler : IRequestHandler<Query, List<PhraseCartDto>>
+        public class Handler : IRequestHandler<Query, List<PhrasesWithTranslationDto>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -35,25 +33,26 @@ namespace Services.Translations.Queries
                 _mapper = mapper;
             }
 
-            public async Task<List<PhraseCartDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<PhrasesWithTranslationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 //TODO- get current user id
                 var userId = "ef84dac8-84a0-42a6-ba94-8840d9078af3";
                 
        
 
-                var phrasesCartDtos = from P in _context.Phrases
-                    where P.UserPhrases.All(a => a.PhaseId != P.Id)
+                var phrasesCartDtos =  from P in _context.Phrases
+                    where P.UserPhrases.All(a => a.UserId != userId)
                     where P.LanguageId == request.FromLanguageId
-                    select  new PhraseCartDto
+                    select  new PhrasesWithTranslationDto
                     {
                         Phrase = P.Word,
                         PhraseId = P.Id,
                         Translation = P.Translations.First(l => l.LanguageId == request.ToLanguageId).Word
-                    };
+                    }
+                    ;
 
                 
-                return phrasesCartDtos.ToList();
+                return await phrasesCartDtos.OrderBy(x => x.PhraseId).Take(request.PhrasesCount).ToListAsync(cancellationToken: cancellationToken);
             }
         }
 

@@ -24,10 +24,6 @@ namespace Data
                 .HasForeignKey(bc => bc.PhaseId);
 
             builder.Entity<UserPhrase>()
-                .Property(b => b.NumberOfRemainingRepetitions)
-                .HasDefaultValue(3);
-
-            builder.Entity<UserPhrase>()
                 .Property(b => b.LastSeen)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }

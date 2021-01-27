@@ -1,13 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Api.Controllers;
 using Application.User;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace Api.Controllers
 {
-    public class UserController : BaseController
+    public class AuthController : BaseController
     {
         // [AllowAnonymous]
         // [HttpPost("login")]

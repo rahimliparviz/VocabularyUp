@@ -3,20 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using Data;
-using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Services.DTO;
 using Services.Extentions;
 
-namespace Services.Phrases.Commands
+namespace Services.UserServices.Actions.Queries
 {
-    public class FileUpload
+    public class PhrasesFromFile
     {
-        public class Command : IRequest<List<PhrasesWithTranslationsDto>>
+        public class Command : IRequest<List<PhrasesWithTranslationDto>>
         {
             public IFormFile File { get; set; }
             public Guid FromLanguageId { get; set; }
@@ -24,18 +22,16 @@ namespace Services.Phrases.Commands
         }
    
 
-    public class Handler : IRequestHandler<Command, List<PhrasesWithTranslationsDto>>
+    public class Handler : IRequestHandler<Command, List<PhrasesWithTranslationDto>>
     {
         private readonly DataContext _context;
-        private readonly IMapper _mapper;
 
-        public Handler(DataContext context,IMapper mapper)
+        public Handler(DataContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
         
-        public async Task<List<PhrasesWithTranslationsDto>> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<List<PhrasesWithTranslationDto>> Handle(Command request, CancellationToken cancellationToken)
         {
 
             var phrases =await request.File.ReadAsStringAsync();
@@ -57,13 +53,16 @@ namespace Services.Phrases.Commands
                 .Where(i => i.LanguageId == request.FromLanguageId && phrases.Contains(i.Word))
                 .ToList();
 
-
             
 
-            var wordsToLearn =  _mapper.Map<List<Phrase>, List<PhrasesWithTranslationsDto>>(
+            var wordsToLearn =
                 existedPhrases.Except(userPhrases)
-                    .Where(l=>l.Translations.Any(g=>g.LanguageId == request.ToLanguageId))
-                    .ToList());
+                    .Select(a => new PhrasesWithTranslationDto
+                    {
+                        Phrase = a.Word,
+                        PhraseId = a.Id,
+                        Translation = a.Translations.First(l => l.LanguageId == request.ToLanguageId).Word
+                    }).ToList();
             return wordsToLearn;
     
         }

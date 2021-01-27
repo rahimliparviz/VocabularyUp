@@ -3,20 +3,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Data;
-using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Services.Phrases.Commands
+namespace Services.UserServices.Actions.Commands
 {
     public class LearnPhrase
     {
         public class Command : IRequest
         {
-            public Guid PhraseId { get; }
-            public Guid FromLanguageId { get; }
-            public Guid ToLanguageId { get; }
+            public Guid PhraseId { get; set; }
+            public Guid FromLanguageId { get; set; }
+            public Guid ToLanguageId { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>

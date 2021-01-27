@@ -12,9 +12,9 @@ namespace Services.Phrases.Commands
     {
         public class Command : IRequest
         {
-            public Guid PhraseId { get; }
-            public Guid FromLanguageId { get; }
-            public Guid ToLanguageId { get; }
+            public Guid PhraseId { get; set; }
+            public Guid FromLanguageId { get; set; }
+            public Guid ToLanguageId { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>
@@ -51,6 +51,7 @@ namespace Services.Phrases.Commands
                     LastSeen = DateTime.Now,
                     NumberOfRemainingRepetitions = 0
                 };
+                
                 await _context.UserPhrases.AddAsync(userPhrase, cancellationToken);
 
 

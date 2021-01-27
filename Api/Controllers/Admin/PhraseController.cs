@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.DTO;
 using Services.Phrases.Queries;
 using Services.Phrases.Commands;
+using Services.UserServices.Actions.Queries;
 
 namespace Api.Controllers.Admin
 {
@@ -51,12 +52,7 @@ namespace Api.Controllers.Admin
             return await Mediator.Send(new Delete.Command {Id = id});
         }
 
-        [HttpPost("upload")]
-        public async Task<ActionResult<List<PhrasesWithTranslationsDto>>> Add([FromForm] FileUpload.Command command)
-        {
-            return await Mediator.Send(command);
-        }
-
+      
         [HttpPost("upload-from-dictionary")]
         public async Task<ActionResult<Unit>>  AddFromDictionary([FromForm] DictionaryUpload.Command command)
         {
