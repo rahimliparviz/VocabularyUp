@@ -5,6 +5,8 @@ using AutoMapper;
 using Data;
 using Domain;
 using FluentValidation.AspNetCore;
+using Infrastructure.Interfaces;
+using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -46,8 +48,7 @@ namespace Api
                 .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>());
 
 
-            services.AddSwaggerGen(
-                opt =>
+            services.AddSwaggerGen(opt =>
                 {
                     opt.SwaggerDoc("v1",
 
@@ -60,6 +61,9 @@ namespace Api
                     opt.CustomSchemaIds(t=>t.FullName);
            
                 });
+
+            services.AddScoped<IJwtGenerator, JwtGenerator>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
             
             
             
