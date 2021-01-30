@@ -75,7 +75,8 @@ namespace Api
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<User>>();
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890veryhard"));
+            // var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890veryhard"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT:KEY")));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(opt =>
                 {

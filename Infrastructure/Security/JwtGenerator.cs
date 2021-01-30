@@ -16,18 +16,15 @@ namespace Infrastructure.Security
         private readonly SymmetricSecurityKey _key;
         public JwtGenerator(IConfiguration config)
         {
-            //TODO -tokeni config filedan al
-
-           
-            // _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890veryhard"));
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:KEY"]));
         }
 
         public string CreateToken(User user)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId, user.UserName)
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
 
             // generate signing credentials

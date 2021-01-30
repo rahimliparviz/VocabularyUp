@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.DTO;
 using Services.UserServices.Authentication.Commands;
 using Services.UserServices.Authentication.Queries;
 
-namespace Api.Controllers
+namespace Api.Controllers.User
 {
     public class AuthController : BaseController
     {

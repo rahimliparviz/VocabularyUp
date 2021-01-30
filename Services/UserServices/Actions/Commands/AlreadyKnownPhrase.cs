@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Data;
 using Domain;
 using FluentValidation;
+using Infrastructure.Errors;
+using Infrastructure.Interfaces;
 using MediatR;
 
 namespace Services.Phrases.Commands
@@ -30,17 +33,19 @@ namespace Services.Phrases.Commands
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;
+            private readonly IUserAccessor _userAccessor;
 
-            public Handler(DataContext context)
+            public Handler(DataContext context,IUserAccessor userAccessor)
             {
                 _context = context;
+                _userAccessor = userAccessor;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                //TODO- get current user id
-                var userId = "ef84dac8-84a0-42a6-ba94-8840d9078af3";
-
+             
+                var userId = _userAccessor.GetCurrentUserId() ??
+                             throw new RestException(HttpStatusCode.Unauthorized);
 
                 var userPhrase = new UserPhrase
                 {
