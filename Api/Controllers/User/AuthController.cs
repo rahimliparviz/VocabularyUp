@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.DTO;
@@ -11,14 +12,14 @@ namespace Api.Controllers.User
     {
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<AuthUser>> Login(Login.Query query)
+        public async Task<ActionResult<AuthUser>> Login([FromBody] Login.Query query)
         {
             return await Mediator.Send(query);
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<AuthUser>> Register(Register.Command command)
+        public async Task<ActionResult<AuthUser>> Register([FromBody] Register.Command command)
         {
             return await Mediator.Send(command);
         }
@@ -27,6 +28,13 @@ namespace Api.Controllers.User
         public async Task<ActionResult<AuthUser>> CurrentUser()
         {
             return await Mediator.Send(new CurrentUser.Query());
+        }
+
+        [AllowAnonymous]
+        [HttpPost("logout")]
+        public async Task<Unit> Logout()
+        {
+            return await Mediator.Send(new Logout.Command());
         }
     }
 }

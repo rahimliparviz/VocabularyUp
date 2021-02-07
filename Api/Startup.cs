@@ -9,9 +9,11 @@ using Infrastructure.Interfaces;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,10 +46,40 @@ namespace Api
                 opts.EnableDetailedErrors();
                 opts.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddControllers()
+
+            services.AddAuthorization(opt =>
+            {
+                // opt.AddPolicy("asa",policyBuilder => policyBuilder.RequireAuthenticatedUser());
+                opt.AddPolicy("AAA", policy => { policy.Requirements.Add(new CustomPolicy()); });
+            });
+            services.AddSingleton<IAuthorizationHandler, CustomPolicyHandler>();  
+            
+            services.AddControllers(
+                    opt =>
+                    {
+                        //Burda butun controllerlere global olaraq [Authorise] filteri elave edilir
+                        var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                        opt.Filters.Add(new AuthorizeFilter(policy));
+                    }
+                )
                 .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>());
 
 
+
+           
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             services.AddSwaggerGen(opt =>
                 {
                     opt.SwaggerDoc("v1",
@@ -64,9 +96,10 @@ namespace Api
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
-            
-            
-            
+
+
+            // services.AddAuthorization();
+
 
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -121,6 +154,7 @@ namespace Api
             );
 
             app.UseAuthentication();
+            //Ancaq custom polici yazilanda istifade olunur yoxsa Filterler islerini gorur
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

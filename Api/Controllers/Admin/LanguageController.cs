@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.DTO;
 using Services.Languages.Commands;
@@ -13,7 +14,7 @@ namespace Api.Controllers.Admin
     public class LanguageController : BaseController
     {
    
- 
+        // [Authorize(Policy = "AAA")]
         [HttpGet]
         public async Task<ActionResult<List<LanguageGetDto>>> List()
         {
