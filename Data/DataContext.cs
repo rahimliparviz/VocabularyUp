@@ -26,6 +26,12 @@ namespace Data
             builder.Entity<UserPhrase>()
                 .Property(b => b.LastSeen)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.Entity<User>()
+                .Property(b => b.Role)
+                .HasDefaultValue("user");
+
+            
         }
 
         public DbSet<Language> Languages { get; set; }
