@@ -8,7 +8,7 @@ using Services.Phrases.Commands;
 using Services.UserServices.Actions.Commands;
 using Services.UserServices.Actions.Queries;
 
-namespace Api.Controllers
+namespace Api.Controllers.User
 {
     public class UserController:BaseController
     {
@@ -19,11 +19,26 @@ namespace Api.Controllers
         }
 
         [HttpGet("user-phrases")]
-        public async Task<ActionResult<List<PhrasesWithTranslationDto>>> UserPhrases([FromBody] GetUserPhrases.Query query)
+        // public async Task<ActionResult<List<PhrasesWithTranslationDto>>> UserPhrases([FromBody] GetUserPhrases.Query query)
+        public async Task<ActionResult<List<PhrasesWithTranslationDto>>> UserPhrases(
+            Guid fromLanguageId,
+            Guid toLanguageId, 
+            string filter)
+        {
+            // return await Mediator.Send(query);
+            return await Mediator.Send(new GetUserPhrases.Query(){Filter = filter,FromLanguageId = fromLanguageId,ToLanguageId = toLanguageId});
+        }
+
+        [HttpPost("user-profile")]
+        public async Task<ActionResult<UserProfileDto>> UserProfile(
+            [FromBody] UserProfile.Query query)
         {
             return await Mediator.Send(query);
         }
 
+        /// <summary>
+        /// Eger usere gosterilen sozu bilirse,user bu actionu secir
+        /// </summary>
         [HttpPost("already-known-phrase")]
         public async Task<ActionResult<Unit>> AlreadyKnownPhrase([FromBody] AlreadyKnownPhrase.Command command)
         {

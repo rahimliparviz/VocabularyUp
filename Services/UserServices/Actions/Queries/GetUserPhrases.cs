@@ -20,6 +20,7 @@ namespace Services.UserServices.Actions.Queries
         {
             public Guid FromLanguageId { get; set; }
             public Guid ToLanguageId { get; set; }
+            public string Filter { get; set; }
         }
 
 
@@ -40,22 +41,37 @@ namespace Services.UserServices.Actions.Queries
                 var userId = _userAccessor.GetCurrentUserId() ??
                              throw new RestException(HttpStatusCode.Unauthorized);
 
-                var phrasesCartDtos=await  _context.UserPhrases
+              
+                var queryable =  _context.UserPhrases
                     .Include(a => a.Phrase.Translations)
-                    .Where(p=>p.NumberOfRemainingRepetitions == 0)
                     .Where(u => u.UserId == userId)
                     .Where(l => l.FromLanguageId == request.FromLanguageId && l.ToLanguageId == request.ToLanguageId)
-                    .Select(a => new PhrasesWithTranslationDto
+                    .AsQueryable();
+
+                if (request.Filter == "forgotten")
+                {
+                    queryable = queryable.Where(x =>x.NumberOfRemainingRepetitions > 0);
+                }
+
+                if (request.Filter == "known")
+                {
+                    queryable = queryable.Where(x => x.NumberOfRemainingRepetitions == 0);
+                }
+
+
+
+
+               var phrases = await queryable.Select(a => new PhrasesWithTranslationDto
                     {
                         Phrase = a.Phrase.Word,
                         PhraseId = a.PhaseId,
                         Translation = a.Phrase.Translations.First(l => l.LanguageId == request.ToLanguageId).Word
                     })
                     .Take(50)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken: cancellationToken);
 
                 
-                return phrasesCartDtos;
+                return phrases;
             }
         }
 
