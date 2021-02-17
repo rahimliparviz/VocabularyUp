@@ -13,9 +13,12 @@ namespace Api.Controllers.User
     public class UserController:BaseController
     {
         [HttpGet("phrases-to-learn")]
-        public async Task<ActionResult<List<PhrasesWithTranslationDto>>> PhrasesToLearn([FromBody] GetNewPhrasesToLearn.Query query)
+        public async Task<ActionResult<List<PhrasesWithTranslationDto>>> PhrasesToLearn(Guid fromLanguageId,
+            Guid toLanguageId,
+            int phrasesCount)
         {
-            return await Mediator.Send(query);
+            return await Mediator.Send(new GetNewPhrasesToLearn.Query()
+                {PhrasesCount = phrasesCount, FromLanguageId = fromLanguageId, ToLanguageId = toLanguageId});
         }
 
         [HttpGet("user-phrases")]

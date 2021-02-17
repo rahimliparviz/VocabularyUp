@@ -65,7 +65,8 @@ namespace Services.UserServices.Actions.Queries
                     {
                         Phrase = a.Phrase.Word,
                         PhraseId = a.PhaseId,
-                        Translation = a.Phrase.Translations.First(l => l.LanguageId == request.ToLanguageId).Word
+                        Translation = a.Phrase.Translations.First(l => l.LanguageId == request.ToLanguageId).Word,
+                        NumberOfRemainingRepetitions=a.NumberOfRemainingRepetitions
                     })
                     .Take(50)
                     .ToListAsync(cancellationToken: cancellationToken);
